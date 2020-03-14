@@ -1,6 +1,9 @@
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import hash from "root/util/hash";
 import { Schema, model, Document } from "mongoose";
 import { AutoIncrement } from "root/database/connect";
-import { genSalt, hash } from "bcrypt";
+import config from "root/config";
 
 export interface UserProps extends Document {
   _id: number;
@@ -61,11 +64,23 @@ UserSchema.pre("save", async function (this: UserProps, next) {
     next();
   }
 
-  const salt = await genSalt(10);
-  this.password = await hash(this.password, salt);
+  this.password = await hash.create(this.password);
 
   next();
 });
+
+UserSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
 
 UserSchema.virtual("tasks", {
   ref: "Task",

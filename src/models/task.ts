@@ -48,7 +48,7 @@ const TaskSchema: Schema = new Schema({
   }
 });
 
-TaskSchema.plugin(AutoIncrement);
+TaskSchema.plugin(AutoIncrement, { id: "taskId" });
 
 TaskSchema.pre("remove", async function (this: TaskProps, next) {
   await this.model("Item").deleteMany({ task: this._id });
@@ -57,6 +57,13 @@ TaskSchema.pre("remove", async function (this: TaskProps, next) {
 
 TaskSchema.virtual("items", {
   ref: "Item",
+  localField: "_id",
+  foreignField: "task",
+  justOne: false,
+});
+
+TaskSchema.virtual("tags", {
+  ref: "Tag",
   localField: "_id",
   foreignField: "task",
   justOne: false,

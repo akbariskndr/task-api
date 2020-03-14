@@ -4,8 +4,10 @@ import { AutoIncrement } from "root/database/connect";
 export interface TagProps extends Document {
   _id: number;
   name: string;
+  color: string;
   createdAt: Date;
   updatedAt: Date;
+  task: number;
   user: number;
 }
 
@@ -16,8 +18,17 @@ const TagSchema: Schema = new Schema({
     maxlength: [ 12, "Tag name could only be 12 characters long" ],
     required: [ true, "Please add a tag name" ],
   },
+  color: {
+    type: String,
+    default: "0xffffff"
+  },
   createdAt: Date,
   updatedAt: Date,
+  task: {
+    type: Number,
+    ref: "Task",
+    required: true
+  },
   user: {
     type: Number,
     ref: "User",
