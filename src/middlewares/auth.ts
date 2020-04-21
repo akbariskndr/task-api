@@ -1,23 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "root/util/jwt";
-import User from "root/models/user";
+import User, { UserProps } from "root/models/user";
+
+const isBearerTokenExist = (req: Request): boolean => {
+  return req.headers.authorization && req.headers.authorization.startsWith("Bearer");
+};
+
+const fetchToken = (req: Request): string => {
+  return req.headers.authorization.split(" ")[1];
+};
+
+const resolveUser = async (token: string): Promise<UserProps> => {
+  const decoded = jwt.verify(token);
+  return await User.findById(decoded);
+};
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-  let token = null;
-
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-
-  if (!token) {
+  if (!isBearerTokenExist(req)) {
     return next();
   }
 
-  try {
-    const decoded = jwt.verify(token);
-    const user = await User.findById(decoded);
+  const token = fetchToken(req);
 
-    req.user = user;
+  try {
+    req.user = await resolveUser(token);
   } catch (err) {
     return next(err);
   }

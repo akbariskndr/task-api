@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { validate } from "class-validator";
-import { plainToClass } from "class-transformer";
 import { AbstractRequestConstructor } from "root/requests/abstract-request";
 
-const validateRequest = (requestType: AbstractRequestConstructor) => {
+export const validateRequest = (requestType: AbstractRequestConstructor) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const requestPayload = req.body || req.params;
+    const requestPayload = req.body;
     const payload = new requestType(requestPayload);
 
     if (!await payload.isValid()) {
@@ -18,5 +16,3 @@ const validateRequest = (requestType: AbstractRequestConstructor) => {
     next();
   };
 };
-
-export default validateRequest;

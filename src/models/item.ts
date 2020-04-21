@@ -51,7 +51,7 @@ const ItemSchema: Schema = new Schema({
   timestamps: true
 });
 
-ItemSchema.plugin(AutoIncrement);
+ItemSchema.plugin(AutoIncrement, { id: "itemId" });
 
 const Item = model<ItemProps>("Item", ItemSchema);
 

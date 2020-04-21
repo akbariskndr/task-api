@@ -1,9 +1,7 @@
-import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import hash from "root/util/hash";
 import { Schema, model, Document } from "mongoose";
 import { AutoIncrement } from "root/database/connect";
-import config from "root/config";
 
 export interface UserProps extends Document {
   _id: number;
@@ -57,7 +55,7 @@ const UserSchema: Schema = new Schema({
   }
 });
 
-UserSchema.plugin(AutoIncrement);
+UserSchema.plugin(AutoIncrement, { id: "userId" });
 
 UserSchema.pre("save", async function (this: UserProps, next) {
   if (!this.isModified("password")) {

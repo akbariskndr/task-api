@@ -39,7 +39,7 @@ const TagSchema: Schema = new Schema({
   timestamps: true
 });
 
-TagSchema.plugin(AutoIncrement);
+TagSchema.plugin(AutoIncrement, { id: "tagId" });
 
 const Tag = model<TagProps>("Tag", TagSchema);
 
